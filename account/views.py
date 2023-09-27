@@ -24,7 +24,6 @@ from djoser.views import UserViewSet
 from django.db import IntegrityError
 from rest_framework import status
 from django.core.mail import EmailMultiAlternatives
-from core.tokens import account_activation_token, send_activation_email
 
 class CustomUserViewSet(UserViewSet):
     def create(self, request, *args, **kwargs):
@@ -73,29 +72,12 @@ class CustomUserViewSet(UserViewSet):
             email_message=EmailMultiAlternatives(SITE_NAME,'',EMAIL_HOST_USER,[recipient_email],)
             email_message.attach_alternative(email_body , 'text/html')
 
-# Send the email
             email_message.send()
-            # send_mail(
-            #     SITE_NAME,
-            #     email_body,
-            #     EMAIL_HOST_USER,
-            #     [recipient_email],
-            #     fail_silently=False,
-            # )
-            # --------------------------------------------
-                # Generate an activation token for the user
-            # uid = urlsafe_base64_encode(force_bytes(custom_user.pk))
-            # token = account_activation_token.make_token(custom_user)
-
-            # # Create an activation link
-            # activation_link = request.build_absolute_uri(reverse('activation', kwargs={'uid': uid, 'token': token}))
-
-            # # Send the activation email
-            # send_activation_email(request, custom_user.email, activation_link, uid, token)
-
-            # Customize the response data for successful creation
+    
+    
             response_data = {
                 "success": True,
+                "message":"Activate Link Sent To You'r Email,Please Check You'r Email",
                 "username": custom_user.username,
                 "email": custom_user.email,
             }
