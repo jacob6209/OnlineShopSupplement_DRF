@@ -1,0 +1,122 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirmation Email</title>
+    <style>
+        /* Add your CSS styles here */
+
+        /* Body styles */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f8f8;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* Container styles */
+        .container {
+            max-width: 600px;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Header styles */
+        .header {
+            text-align: center;
+        }
+
+        .header img {
+            max-width: 350px;
+        }
+
+        /* Heading styles */
+        .heading {
+            font-size: 24px;
+            margin-top: 20px;
+            color: #333;
+        }
+
+        /* Message styles */
+        .message {
+            font-size: 16px;
+            margin-top: 20px;
+            color: #666;
+        }
+
+        /* Social media links styles */
+        .social-links {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .social-links a {
+            margin: 0 10px;
+            padding: 5px 10px;
+            border-radius: 10px;
+            color: #fff;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .social-links .instagram {
+            background-color: #E1306C;
+        }
+
+        .social-links .twitter {
+            background-color: #1da1f2;
+        }
+
+        .social-links .linkedin {
+            background-color: #0077B5;
+        }
+
+        .social-links .youtube {
+            background-color: #ff0000;
+        }
+
+        /* Contact info styles */
+        .contact-info {
+            margin-top: 20px;
+            font-style: italic;
+            color: #888;
+        }
+
+        /* Footer styles */
+        .footer {
+            margin-top: 20px;
+            text-align: center;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="{% static 'img/logo4.jpg' %}" alt="Logo">
+            <h1 class="heading">Thank you for joining us!</h1>
+        </div>
+        <p class="message">Your account has been successfully created and is ready to use.</p>
+        <div class="social-links">
+            <span>Follow us:</span>
+            <a class="instagram" href="#">Instagram</a>
+            <a class="twitter" href="#">Twitter</a>
+            <a class="linkedin" href="#">LinkedIn</a>
+            <a class="youtube" href="#">Youtube</a>
+        </div>
+        <p class="contact-info">If you face difficulties logging in, kindly contact us at contact@supplements-shop.com</p>
+        <div class="footer">
+            &copy; 2023 Supplements Shop | All rights reserved
+        </div>
+    </div>
+</body>
+</html>
