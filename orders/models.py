@@ -1,3 +1,4 @@
+from cgitb import reset
 from django.db import models
 from store.models import Customer,Product
 
@@ -15,6 +16,12 @@ class Order(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.PROTECT, related_name='orders')
     datetime_created = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=1, choices=ORDER_STATUS, default=ORDER_STATUS_UNPAID)
+    zarinpal_authority=models.CharField(max_length=255,blank=True)
+    zarinpal_ref_id=models.CharField(max_length=150,blank=True)
+    zarinpal_data=models.TextField(blank=True)
+    
+    def get_total_price(self): 
+        return sum(item.quantity * item.unit_price for item in self.items.all())
 
 
 class OrderItem(models.Model):

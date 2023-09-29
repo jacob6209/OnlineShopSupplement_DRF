@@ -34,5 +34,6 @@ urlpatterns = [
     path("__debug__/", include("debug_toolbar.urls")),
     path('activate/<uid>/<token>', ActivateUser.as_view({'get': 'activation'}), name='activation'),
     path('confirmation/', views.confirmation_view, name='confirmation_page'),
+    path('payment/',include('payment.urls')),
 
 ]+static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)  # delete this link when u want to deply

@@ -44,7 +44,7 @@ class ProductImage(models.Model):
 
 
 class Customer(models.Model):
-    user=models.OneToOneField(settings.AUTH_USER_MODEL,on_delete=models.CASCADE,)
+    user=models.OneToOneField(settings.AUTH_USER_MODEL,on_delete=models.CASCADE,related_name="CustomerUser")
     phone_number = models.CharField(max_length=255)
     birth_date = models.DateField(null=True, blank=True)
     # first_name = models.CharField(max_length=255)
@@ -58,7 +58,7 @@ class Customer(models.Model):
 
 
 class Address(models.Model):
-    customer = models.OneToOneField(Customer, on_delete=models.CASCADE, primary_key=True)
+    customer = models.OneToOneField(Customer, on_delete=models.CASCADE, primary_key=True,related_name='Customeraddress')
     province = models.CharField(max_length=255)
     city = models.CharField(max_length=255)
     street = models.CharField(max_length=255)
