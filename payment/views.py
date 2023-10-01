@@ -210,11 +210,18 @@ def  payment_callback_sandbox(request):
         if  'errors' not in res.json():
             data=res.json()
             payment_code=data['Status']
+
             if payment_code==100:
                 order.status=order.ORDER_STATUS_PAID
                 order.zarinpal_ref_id=data['RefID']
                 order.zarinpal_data=data
                 order.save()
+
+                # Decrease product inventory
+                for  item in order.items.all():
+                     item.product.inventory -= item.quantity
+                     item.product.save()
+         
                 return Response({'Success': True, 'Message': 'Payment Was Successful'}, status=status.HTTP_204_NO_CONTENT)
             elif payment_code==101:
                 return Response({'Success':True,'Message':'Payment Was Successful,However This transaction has already been registered'},status=status.HTTP_204_NO_CONTENT)

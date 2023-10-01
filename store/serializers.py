@@ -103,11 +103,27 @@ class AddItemSerializer(serializers.ModelSerializer):
     class Meta:
         model=CartItem
         fields=['id','product','quantity']
+
+    def validate_quantity(self, value):
+        product_id = self.initial_data['product']
+        requested_quantity = value
+
+        try:
+            product = Product.objects.get(id=product_id)
+        except Product.DoesNotExist:
+            raise serializers.ValidationError('Product not found.')
+
+        if product.inventory < requested_quantity:
+            raise serializers.ValidationError('Not enough stock available for this product.')
+        return value
     
     def create(self, validated_data):
         cart_pk=self.context['cart_pk']
         product=validated_data.get('product')
         quantity=validated_data.get('quantity')
+
+        # Check inventory before adding to cart
+        self.validate_quantity(quantity)
 
         # if CartItem.objects.filter(cart_id=cart_pk,product_id=product.id).exists():
         try:

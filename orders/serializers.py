@@ -95,7 +95,8 @@ class OrderCreateSerializer(serializers.Serializer):
                     order=order,
                     product=cart_item.product,
                     unit_price=cart_item.product.unit_price,
-                    quantity=cart_item.quantity
+                    quantity=cart_item.quantity,
+
                 ) for cart_item in cart_items
             ]
                 # Secent Solotion
