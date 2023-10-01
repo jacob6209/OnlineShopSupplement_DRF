@@ -13,6 +13,7 @@ from django.utils.text import slugify
 from store import models
 from django.contrib.auth import get_user_model  
 from django.db import transaction
+from django.shortcuts import get_object_or_404
 
 
 from store.models import Address, Cart, Category, Customer, Product,Comment,CartItem, ProductImage
@@ -131,6 +132,8 @@ class CartItemSerializer(serializers.ModelSerializer):
         model=CartItem
         fields=['id','product','quantity','item_total']
 
+   
+
     def get_item_total(self,cart_item:CartItem):
         return cart_item.quantity*cart_item.product.unit_price
 
@@ -146,6 +149,7 @@ class CartSerializer(serializers.ModelSerializer):
     def get_total_price(self,cart:Cart):
         return   sum([item.quantity* item.product.unit_price  for item in cart.items.all()])
 
+    
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model=get_user_model()

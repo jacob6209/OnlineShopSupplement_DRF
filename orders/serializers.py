@@ -6,7 +6,6 @@ from multiprocessing import context
 from pickletools import decimalnl_long
 from pyexpat import model
 from statistics import mode
-# from typing_extensions import Self
 from unicodedata import decimal
 from urllib import response
 from rest_framework  import serializers
@@ -72,7 +71,6 @@ class OrderCreateSerializer(serializers.Serializer):
     def validate_cart_id(self,cart_id):
         if not Cart.objects.filter(id=cart_id).exists():
             return serializers.ValidationError("There Is No Cart With Cart Id")
-
         if (CartItem.objects.filter(cart_id=cart_id).count()==0):
             return serializers.ValidationError("Your Cart is Empty,Please Add Some Product First")
         return cart_id
@@ -80,6 +78,7 @@ class OrderCreateSerializer(serializers.Serializer):
 
 
     def save(self, **kwargs):
+
         with transaction.atomic():
             cart_id=self.validated_data['cart_id']
             user_id=self.context['user_id']
