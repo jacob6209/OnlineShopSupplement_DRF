@@ -14,7 +14,7 @@ from store import models
 from django.contrib.auth import get_user_model  
 from django.db import transaction
 from django.shortcuts import get_object_or_404
-
+from rest_framework.exceptions import PermissionDenied
 
 from store.models import Address, Cart, Category, Customer, Product,Comment,CartItem, ProductImage
 
@@ -85,13 +85,17 @@ class ProductSerializer(serializers.ModelSerializer):
         return product
 
 class CommentSerializer(serializers.ModelSerializer):
+
     class Meta: 
         model=Comment
         fields=["id",'name','body']
 
     def create(self, validated_data):
+        if not self.context['request'].user.is_authenticated:
+            raise PermissionDenied("You must be logged in to post a comment.")
         product_pk=self.context['product_pk']
-        return Comment.objects.create(product_id=product_pk,**validated_data)
+        user = self.context['request'].user
+        return Comment.objects.create(product_id=product_pk,user=user,**validated_data)
 
 class CartProductSerializer(serializers.ModelSerializer):
     class Meta:

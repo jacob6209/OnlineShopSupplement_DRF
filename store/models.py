@@ -4,6 +4,8 @@ from django.db import models
 from uuid import uuid4
 from django.conf import settings
 from core.models import CustomUser
+from django.contrib.auth import get_user_model
+User=get_user_model()
 
 class Category(models.Model):
     title = models.CharField(max_length=255)
@@ -44,7 +46,7 @@ class ProductImage(models.Model):
 
 
 class Customer(models.Model):
-    user=models.OneToOneField(settings.AUTH_USER_MODEL,on_delete=models.CASCADE,related_name="CustomerUser")
+    user=models.OneToOneField(User,on_delete=models.CASCADE,related_name="CustomerUser")
     phone_number = models.CharField(max_length=255)
     birth_date = models.DateField(null=True, blank=True)
     # first_name = models.CharField(max_length=255)
@@ -101,13 +103,15 @@ class Comment(models.Model):
         (COMMENT_STATUS_APPROVED, 'Approved'),
         (COMMENT_STATUS_NOT_APPROVED, 'Not Approved'),
     ]
-
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='commment') 
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='comments')
     name = models.CharField(max_length=255)
-    body = models.TextField()
+    body = models.TextField(max_length=255)
     datetime_created = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=2, choices=COMMENT_STATUS, default=COMMENT_STATUS_WAITING)
 
+    def __str__(self):
+        return f'{ self.body}'
 
 class Cart(models.Model):
     id=models.UUIDField(primary_key=True,default=uuid4)

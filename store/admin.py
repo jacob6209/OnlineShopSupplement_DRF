@@ -115,7 +115,7 @@ class ProductAdmin(admin.ModelAdmin):
 
 @admin.register(models.Comment)
 class CommentAdmin(admin.ModelAdmin):
-    list_display = ['id', 'product', 'status', ]
+    list_display = ['id','user','body','product', 'status','datetime_created' ]
     list_editable = ['status']
     list_per_page = 10
     autocomplete_fields = ['product', ]

@@ -11,7 +11,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import action
 
-from .permissions import IsAdminOrReadOnly
+from .permissions import IsAdminOrReadOnly, IsOwnerOrReadOnly
 from .pagination import DefultPagination
 from .models import Address, Cart, CartItem, Category, Customer, Product,Comment
 from .serializers import AddItemSerializer, CartItemSerializer, CartSerializer, CategorySerializer, CommentSerializer, CustomerSerializer, ProductSerializer, UpdateCartItemSerializer
@@ -314,15 +314,15 @@ class CategoryViewSet(ModelViewSet):
 #         return Response(serializers.data,status=status.HTTP_201_CREATED)
 
 class CommentViewSet(ModelViewSet):
+    permission_classes = [IsOwnerOrReadOnly]
     serializer_class=CommentSerializer
-    # queryset=Comment.objects.all()
 
     def get_queryset(self):
         product_pk=self.kwargs['product_pk']
         return Comment.objects.filter(product_id=product_pk).all()
 
     def get_serializer_context(self):
-        return  {"product_pk":self.kwargs['product_pk']}
+        return  {"product_pk":self.kwargs['product_pk'],"request": self.request}
 
 
 
