@@ -5,6 +5,7 @@ from uuid import uuid4
 from django.conf import settings
 from core.models import CustomUser
 from django.contrib.auth import get_user_model
+from django.core.exceptions import ValidationError
 User=get_user_model()
 
 class Category(models.Model):
@@ -64,6 +65,12 @@ class Address(models.Model):
     province = models.CharField(max_length=255)
     city = models.CharField(max_length=255)
     street = models.CharField(max_length=255)
+    zip_code = models.CharField(max_length=10)
+
+
+    def clean(self):
+        if len(self.zip_code) < 10:
+            raise ValidationError("ZIP code must be 10 characters long.")
 
 #______________________________________________________ 
 

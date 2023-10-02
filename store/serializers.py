@@ -85,7 +85,6 @@ class ProductSerializer(serializers.ModelSerializer):
         return product
 
 class CommentSerializer(serializers.ModelSerializer):
-
     class Meta: 
         model=Comment
         fields=["id",'name','body']
@@ -186,7 +185,7 @@ class CustomerSerializer(serializers.ModelSerializer):
     # address=AddressSerializer()
     class Meta:
         model=Customer
-        fields=['user','phone_number','birth_date',]
+        fields=['user','phone_number','birth_date']
         read_only_fields=['user']
 
 # class OrderCustomerSerializer(serializers.ModelSerializer):

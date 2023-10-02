@@ -127,7 +127,7 @@ admin.site.register(models.Category)
 
 @admin.register(models.Customer)
 class CustomerAdmin(admin.ModelAdmin):
-    list_display = ['first_name', 'last_name', 'email', ]
+    list_display = ['first_name', 'last_name','phone_number', 'email', 'address']
     list_per_page = 10
     ordering = ['user__last_name', 'user__first_name', ]
     search_fields = ['user__first_name__istartswith', 'user__last_name__istartswith', ]
@@ -137,9 +137,15 @@ class CustomerAdmin(admin.ModelAdmin):
     
     def last_name(self, customer):
         return customer.user.last_name
+    
+    def phone_number(self, customer):
+        return customer.phone_number
 
     def email(self, customer):
         return customer.user.email
+    
+    def address(self,customer):
+        return f'{customer.Customeraddress.province},{customer.Customeraddress.city},{customer.Customeraddress.street}'
 
 
 
