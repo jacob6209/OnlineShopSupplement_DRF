@@ -10,6 +10,7 @@ from unicodedata import decimal
 from urllib import response
 from rest_framework  import serializers
 from django.utils.text import slugify
+from core.models import CustomUser
 from store.models import Customer,Product,Cart,CartItem,Address
 from orders.models import OrderItem,Order
 from django.contrib.auth import get_user_model  
@@ -60,15 +61,59 @@ class OrderUpdateSerializer(serializers.ModelSerializer):
 class AddressSerializer(serializers.ModelSerializer):
     class Meta:
         model = Address
-        fields = ('province', 'city', 'street', 'zip_code')
+        fields = ('first_name','last_name','phone_number','province', 'city', 'street', 'zip_code')
 
     def save(self, customer=None, **kwargs):
-        # Check if the customer already has an address
-        address_instance = customer.Customeraddress if hasattr(customer, 'Customeraddress') else None
-       
+        address_data = self.validated_data
+        address_instance = None
+        
+        # Check if the address already exists for the given customer
         if customer:
-            self.validated_data['customer'] = customer
-        return super().save(**kwargs) 
+            address_instance = Address.objects.filter(customer=customer).first()
+
+        if address_instance:
+            # If address exists, update the fields
+            address_instance.first_name = address_data.get('first_name', address_instance.first_name)
+            address_instance.last_name = address_data.get('last_name', address_instance.last_name)
+            address_instance.phone_number = address_data.get('phone_number', address_instance.phone_number)
+            address_instance.province = address_data.get('province', address_instance.province)
+            address_instance.city = address_data.get('city', address_instance.city)
+            address_instance.street = address_data.get('street', address_instance.street)
+            address_instance.zip_code = address_data.get('zip_code', address_instance.zip_code)
+            address_instance.save()
+
+            # Update the corresponding Customer fields
+            user_instance = customer.user
+            user_instance.first_name = address_data.get('first_name', user_instance.first_name)
+            user_instance.last_name = address_data.get('last_name', user_instance.last_name)
+            user_instance.save()
+
+            customer.phone_number = address_data.get('phone_number', customer.phone_number)
+            customer.save()
+
+        else:
+            # If address does not exist, create a new address instance and set the customer field
+            address_instance = Address(**address_data, customer=customer)
+            address_instance.save()
+
+            # Update the corresponding Customer fields
+            if customer:
+                user_instance = customer.user
+                user_instance.first_name = address_data.get('first_name', user_instance.first_name)
+                user_instance.last_name = address_data.get('last_name', user_instance.last_name)
+                user_instance.save()
+                
+                customer.phone_number = address_data.get('phone_number', customer.phone_number)
+                customer.save()
+
+        return address_instance
+    # def save(self, customer=None, **kwargs):
+    #     # Check if the customer already has an address
+    #     address_instance = customer.Customeraddress if hasattr(customer, 'Customeraddress') else None
+       
+    #     if customer:
+    #         self.validated_data['customer'] = customer
+    #     return super().save(**kwargs) 
 
 class OrderCreateSerializer(serializers.Serializer):
     cart_id=serializers.UUIDField()
@@ -95,11 +140,13 @@ class OrderCreateSerializer(serializers.Serializer):
             cart_id=self.validated_data['cart_id']
             user_id=self.context['user_id']
             address_data = self.validated_data['address']  # Get the address from the validated data
-           
             customer=Customer.objects.get(user_id=user_id)
+
+
             order=Order()
             order.customer=customer
             order.save()
+            cart_items=CartItem.objects.select_related('product').filter(cart_id=cart_id)
 
             # Validate and create the Address object
             address_serializer = AddressSerializer(data=address_data)

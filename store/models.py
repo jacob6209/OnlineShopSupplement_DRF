@@ -48,8 +48,8 @@ class ProductImage(models.Model):
 
 class Customer(models.Model):
     user=models.OneToOneField(User,on_delete=models.CASCADE,related_name="CustomerUser")
-    phone_number = models.CharField(max_length=255)
     birth_date = models.DateField(null=True, blank=True)
+    phone_number = models.CharField(max_length=255)
     # first_name = models.CharField(max_length=255)
     # last_name = models.CharField(max_length=255)
     # email = models.EmailField(
@@ -62,10 +62,13 @@ class Customer(models.Model):
 
 class Address(models.Model):
     customer = models.OneToOneField(Customer, on_delete=models.CASCADE, primary_key=True,related_name='Customeraddress')
+    first_name = models.CharField(max_length=255)
+    last_name = models.CharField(max_length=255)
     province = models.CharField(max_length=255)
     city = models.CharField(max_length=255)
     street = models.CharField(max_length=255)
     zip_code = models.CharField(max_length=10)
+    phone_number = models.CharField(max_length=255)
 
 
     def clean(self):
