@@ -118,20 +118,39 @@ class AddressSerializer(serializers.ModelSerializer):
 class OrderCreateSerializer(serializers.Serializer):
     cart_id=serializers.UUIDField()
     address = AddressSerializer()  # Use AddressSerializer to handle address fields
+
+    # def validate_quantity(self, product_id, requested_quantity):
+    #     try:
+    #         product = Product.objects.get(id=product_id)
+    #     except Product.DoesNotExist:
+    #         raise serializers.ValidationError('Product not found.')
+
+    #     if product.inventory < requested_quantity:
+    #         raise serializers.ValidationError('Not enough stock available for this product.')
+    #     return requested_quantity
     
-              # 2 Solostion
-    # try:
-    #     if Cart.objects.prefetch_related('items').get(id=cart_id).items.count()==0:
-    #         raise serializers.ValidationError("There Is No Cart With Cart Id")
-    # except Cart.DoesNotExist:
-    #        raise serializers.ValidationError("Your Cart is Empty,Please Add Some Product First")
+  
       
-              # 1 solotion  
+    # 1 solotion  
+    #              if not Cart.objects.filter(id=cart_id).exists():
+    #     return serializers.ValidationError("There Is No Cart With Cart Id")
+    # if (CartItem.objects.filter(cart_id=cart_id).count()==0):
+    #     return serializers.ValidationError("Your Cart is Empty,Please Add Some Product First")
     def validate_cart_id(self,cart_id):
-        if not Cart.objects.filter(id=cart_id).exists():
-            return serializers.ValidationError("There Is No Cart With Cart Id")
-        if (CartItem.objects.filter(cart_id=cart_id).count()==0):
-            return serializers.ValidationError("Your Cart is Empty,Please Add Some Product First")
+        # 2 Solostion
+        try:
+            cart=Cart.objects.prefetch_related('items__product').get(id=cart_id)
+            if cart.items.count() == 0:
+                raise serializers.ValidationError("The cart is empty. Please add items to your cart first.")
+            for cart_item in cart.items.all():
+                requested_quantity = cart_item.quantity
+                product = cart_item.product
+                
+                # Validate the quantity of each product
+                if product.inventory < requested_quantity:
+                    raise serializers.ValidationError(f"Not enough stock available for {product.name}.Max Inventory Stock {product.inventory} Left")
+        except Cart.DoesNotExist:
+            raise serializers.ValidationError("Your Cart is Empty,Please Add Some Product First")
         return cart_id
       
 
