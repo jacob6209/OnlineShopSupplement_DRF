@@ -15,7 +15,7 @@ from django.contrib.auth import get_user_model
 from django.db import transaction
 from django.shortcuts import get_object_or_404
 from rest_framework.exceptions import PermissionDenied
-
+from django.db.models import Avg
 from store.models import Address, Cart, Category, Customer, Product,Comment,CartItem, ProductImage
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -36,7 +36,22 @@ class ProductImageSerializer(serializers.ModelSerializer):
         model = ProductImage
         fields = ["id", "product", "image"]
 
+class CommentSerializer(serializers.ModelSerializer):
+    class Meta: 
+        model=Comment
+        fields=["id",'name','body','rating']
+
+    def create(self, validated_data):
+        if not self.context['request'].user.is_authenticated:
+            raise PermissionDenied("You must be logged in to post a comment.")
+        product_pk=self.context['product_pk']
+        user = self.context['request'].user
+        return Comment.objects.create(product_id=product_pk,user=user,**validated_data)
+
 class ProductSerializer(serializers.ModelSerializer):
+    comments = CommentSerializer(many=True, read_only=True)
+    average_rating = serializers.SerializerMethodField()
+
     images=ProductImageSerializer(many=True,read_only=True)
     title=serializers.CharField(max_length=255,source="name")
     # unit_price=serializers.DecimalField(max_digits=6, decimal_places=2)
@@ -50,11 +65,17 @@ class ProductSerializer(serializers.ModelSerializer):
         model=Product
         # never use all too danger
         # fields="__all__"  #never use all too danger
-        fields=['id','title','description','category','unit_price','slug','inventory','price_after_tax','top_deal','flash_sales','images',"uploaded_images"]
+        fields=['id','title','description','category','unit_price','slug','inventory','price_after_tax','top_deal','flash_sales','images','uploaded_images','comments', 'average_rating']
         read_only_fields = ['slug']  
         
     def get_price_after_tax(self,product:Product):
         return round(product.unit_price*Decimal(1.09),2)
+
+
+    def get_average_rating(self, obj):
+        product_id = obj.id
+        average_rating = Comment.objects.filter(product_id=product_id).aggregate(Avg('rating'))['rating__avg']
+        return average_rating
 
     # def create(self, validated_data):
     #     product=Product(**validated_data)
@@ -84,17 +105,7 @@ class ProductSerializer(serializers.ModelSerializer):
             ProductImage.objects.create(product=product, image=image)
         return product
 
-class CommentSerializer(serializers.ModelSerializer):
-    class Meta: 
-        model=Comment
-        fields=["id",'name','body']
 
-    def create(self, validated_data):
-        if not self.context['request'].user.is_authenticated:
-            raise PermissionDenied("You must be logged in to post a comment.")
-        product_pk=self.context['product_pk']
-        user = self.context['request'].user
-        return Comment.objects.create(product_id=product_pk,user=user,**validated_data)
 
 class CartProductSerializer(serializers.ModelSerializer):
     class Meta:
