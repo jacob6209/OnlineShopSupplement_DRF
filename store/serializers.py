@@ -16,7 +16,7 @@ from django.db import transaction
 from django.shortcuts import get_object_or_404
 from rest_framework.exceptions import PermissionDenied
 from django.db.models import Avg
-from store.models import Address, Cart, Category, Customer, Product,Comment,CartItem, ProductImage
+from store.models import Ad, Address, Cart, Category, Customer, Product,Comment,CartItem, ProductImage
 
 class CategorySerializer(serializers.ModelSerializer):
     # sub_product=serializers.SerializerMethodField()
@@ -36,6 +36,26 @@ class ProductImageSerializer(serializers.ModelSerializer):
         model = ProductImage
         fields = ["id", "product", "image"]
 
+class CommentGetSerializer(serializers.ModelSerializer):
+    class Meta: 
+        model=Comment
+        fields=["id",'body','rating']
+
+    def create(self, validated_data):
+
+        if not self.context['request'].user.is_authenticated:
+            raise PermissionDenied("You must be logged in to post a comment.")
+        product_pk=self.context['product_pk']
+        user = self.context['request'].user
+
+         # Get the user's first_name and set it as comment's name
+        validated_data['name'] = user.first_name
+        
+        # Create a new comment with the obtained name
+        comment = Comment.objects.create(product_id=product_pk, user=user, **validated_data)
+        return comment
+
+
 class CommentSerializer(serializers.ModelSerializer):
     class Meta: 
         model=Comment
@@ -46,6 +66,19 @@ class CommentSerializer(serializers.ModelSerializer):
             raise PermissionDenied("You must be logged in to post a comment.")
         product_pk=self.context['product_pk']
         user = self.context['request'].user
+        
+        name = validated_data.get('name')  # Get the name from the validated data
+
+        # Create a new comment with the obtained name
+        comment = Comment.objects.create(product_id=product_pk, user=user, **validated_data)
+
+        # Set the obtained name as the user's first_name
+        user.first_name = name
+        user.save()
+        
+        # Set the name field to user's first_name
+        # validated_data['name'] = user.first_name
+
         return Comment.objects.create(product_id=product_pk,user=user,**validated_data)
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -198,7 +231,25 @@ class CustomerSerializer(serializers.ModelSerializer):
         model=Customer
         fields=['user','phone_number','birth_date']
         read_only_fields=['user']
+#------------------------------------------------------
 
+class ProductImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProductImage
+        fields = ('id', 'image')
+
+class AdsProductSerializer(serializers.ModelSerializer):
+    images = ProductImageSerializer(many=True, read_only=True)
+    class Meta:
+        model = Product
+        fields = ['id', 'images',]
+
+class adsSerializer(serializers.ModelSerializer):
+    product=AdsProductSerializer()
+    class Meta:
+        model=Ad
+        fields=['ad_id','product']
+#---------------------------------------------------------------------------------
 # class OrderCustomerSerializer(serializers.ModelSerializer):
 #     first_name=serializers.CharField(max_length=254,source='user.first_name')
 #     last_name=serializers.CharField(max_length=254,source='user.last_name')

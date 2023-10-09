@@ -115,22 +115,28 @@ class Comment(models.Model):
     ]
 
     RATING_CHOICES=[
-        (1,'1'),
-        (2,'2'),
-        (3,'3'),
-        (4,'4'),
         (5,'5'),
+        (4,'4'),
+        (3,'3'),
+        (2,'2'),
+        (1,'1'),
     ]
+
+    def get_default_name():
+        return settings.AUTH_USER_MODEL.first_name
+
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='commment') 
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='comments')
     name = models.CharField(max_length=255)
     body = models.TextField(max_length=255)
-    rating = models.IntegerField(choices=RATING_CHOICES)  # Rating field limited to 1 to 5
+    rating = models.IntegerField(choices=RATING_CHOICES,default=4)  # Rating field limited to 1 to 5
     datetime_created = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=2, choices=COMMENT_STATUS, default=COMMENT_STATUS_WAITING)
 
     def __str__(self):
         return f'{ self.body}'
+
+    
 
 class Cart(models.Model):
     id=models.UUIDField(primary_key=True,default=uuid4)
@@ -144,3 +150,12 @@ class CartItem(models.Model):
 
     class Meta:
         unique_together = [['cart', 'product']]
+
+
+class Ad(models.Model):
+    ad_id = models.AutoField(primary_key=True)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+
+
+    def __str__(self):
+        return f"Ad {self.ad_id} - {self.product}"

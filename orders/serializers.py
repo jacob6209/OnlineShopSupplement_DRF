@@ -175,7 +175,7 @@ class OrderCreateSerializer(serializers.Serializer):
             # order.Customeraddress = address_instance  # Set the address for the order directly on the customer field
             cart_items=CartItem.objects.select_related('product').filter(cart_id=cart_id)
                 
-                # using list conpention
+            # using list conpention
             order_items=[
                 OrderItem(
                     order=order,

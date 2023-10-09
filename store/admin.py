@@ -162,3 +162,6 @@ class CartItemInline(admin.TabularInline):
 class CartAdmin(admin.ModelAdmin):
     list_display = ['id', 'created_at']
     inlines = [CartItemInline]
+
+
+admin.site.register(models.Ad)

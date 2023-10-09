@@ -13,6 +13,7 @@ router.register('categories',views.CategoryViewSet,basename='category')
 router.register('cart',views.CartViewSet,basename='cart')
 router.register('customers',views.CustomerViewSet,basename='customers')
 router.register('orders', OrderViewSet,basename='orders')
+router.register('getads',views.AdViewSet,basename='orders')
 
 product_router=routers.NestedDefaultRouter(router,'products',lookup='product')
 product_router.register('comments',views.CommentViewSet,basename='product-comment')

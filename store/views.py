@@ -3,6 +3,7 @@ from itertools import count, product
 from multiprocessing import context
 import re
 from this import d
+from tkinter import NO
 from unicodedata import category
 from urllib import request
 from django.shortcuts import get_object_or_404
@@ -14,7 +15,7 @@ from rest_framework.decorators import action
 from .permissions import IsAdminOrReadOnly, IsOwnerOrReadOnly
 from .pagination import DefultPagination
 from .models import Address, Cart, CartItem, Category, Customer, Product,Comment
-from .serializers import AddItemSerializer, CartItemSerializer, CartSerializer, CategorySerializer, CommentSerializer, CustomerSerializer, ProductSerializer, UpdateCartItemSerializer
+from .serializers import AddItemSerializer, CartItemSerializer, CartSerializer, CategorySerializer, CommentGetSerializer, CommentSerializer, CustomerSerializer, ProductSerializer, UpdateCartItemSerializer
 from store import serializers
 from django.db.models import Count
 from rest_framework.generics import ListCreateAPIView,RetrieveUpdateDestroyAPIView
@@ -25,6 +26,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.mixins import CreateModelMixin,RetrieveModelMixin,DestroyModelMixin
 from rest_framework.permissions import IsAdminUser,IsAuthenticated
 from django.db.models import Prefetch
+from rest_framework.exceptions import PermissionDenied
 
 # class AddressViewSet(ModelViewSet):
 #     serializer_class=AddressSerializer
@@ -315,7 +317,18 @@ class CategoryViewSet(ModelViewSet):
 
 class CommentViewSet(ModelViewSet):
     permission_classes = [IsOwnerOrReadOnly]
-    serializer_class=CommentSerializer
+    
+    # serializer_class=CommentSerializer
+
+    def get_serializer_class(self):
+        if self.request.user.is_authenticated:
+            if self.request.method=="POST":
+                if self.request.user.first_name:
+                    return CommentGetSerializer
+            return CommentSerializer
+        else:
+            raise PermissionDenied("You must be logged in to post a comment.")
+    
 
     def get_queryset(self):
         product_pk=self.kwargs['product_pk']
@@ -325,6 +338,28 @@ class CommentViewSet(ModelViewSet):
         return  {"product_pk":self.kwargs['product_pk'],"request": self.request}
 
 
+    def create(self, request, *args, **kwargs):
+        try:
+            return super().create(request, *args, **kwargs)
+        except PermissionDenied as e:
+            return Response({"error": str(e)}, status=403)
 
     
 
+import random
+from rest_framework import viewsets
+from .models import Ad
+from .serializers import adsSerializer
+
+class AdViewSet(viewsets.ModelViewSet):
+    http_method_names = ['get']
+    serializer_class = adsSerializer  # Serializer for Ad model
+
+    def get_queryset(self):
+        return Ad.objects.all()  # You can customize this queryset further if needed
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        random_ads = random.sample(list(queryset), min(2, len(queryset)))  # Get 2 random ads
+        serializer = self.get_serializer(random_ads, many=True)
+        return Response(serializer.data)
