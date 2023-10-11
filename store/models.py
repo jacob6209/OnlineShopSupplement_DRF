@@ -31,6 +31,7 @@ class Product(models.Model):
     description = models.TextField(blank=True)
     unit_price = models.DecimalField(max_digits=6, decimal_places=2)
     inventory = models.IntegerField()
+    soled_item=models.IntegerField(default=0,blank=True,null=True)
     datetime_created = models.DateTimeField(auto_now_add=True)
     datetime_modified = models.DateTimeField(auto_now=True)
     discounts = models.ManyToManyField(Discount, blank=True)
