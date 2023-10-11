@@ -6,6 +6,7 @@ from django.conf import settings
 from core.models import CustomUser
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
+# from django_resized import ResizedImageField
 User=get_user_model()
 
 class Category(models.Model):
@@ -37,6 +38,7 @@ class Product(models.Model):
     # image = models.ImageField(upload_to='product_img/', blank=True, null=True, default='')
     top_deal = models.BooleanField(default=False)
     flash_sales = models.BooleanField(default=False)
+    tags=models.CharField(max_length=50,default="",blank=True,null=True)
 
     def __str__(self):
       return f'{self.name}'
@@ -44,6 +46,8 @@ class Product(models.Model):
 class ProductImage(models.Model):
     product=models.ForeignKey(Product,on_delete=models.CASCADE,related_name="images")
     image=models.ImageField(upload_to='product_img/',default="",null=True,blank="")
+    # image=ResizedImageField(upload_to='product_img/',default="",null=True,blank="")
+    
 
 
 class Customer(models.Model):

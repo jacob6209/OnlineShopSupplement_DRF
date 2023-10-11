@@ -27,6 +27,10 @@ from rest_framework.mixins import CreateModelMixin,RetrieveModelMixin,DestroyMod
 from rest_framework.permissions import IsAdminUser,IsAuthenticated
 from django.db.models import Prefetch
 from rest_framework.exceptions import PermissionDenied
+import random
+from rest_framework import viewsets
+from .models import Ad
+from .serializers import adsSerializer
 
 # class AddressViewSet(ModelViewSet):
 #     serializer_class=AddressSerializer
@@ -70,7 +74,7 @@ class ProductViewSet(ModelViewSet):
     filter_backends=[DjangoFilterBackend]
     filterset_fields=['category_id']
     queryset=Product.objects.select_related("category").all()
-    pagination_class=DefultPagination
+    # pagination_class=DefultPagination
     # pagination_class=PageNumberPagination
 
     def get_serializer_context(self):
@@ -346,10 +350,7 @@ class CommentViewSet(ModelViewSet):
 
     
 
-import random
-from rest_framework import viewsets
-from .models import Ad
-from .serializers import adsSerializer
+
 
 class AdViewSet(viewsets.ModelViewSet):
     http_method_names = ['get']

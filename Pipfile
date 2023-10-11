@@ -16,6 +16,7 @@ djoser = "*"
 djangorestframework-simplejwt = "*"
 pillow = "*"
 environs = {extras = ["django"], version = "*"}
+django-resized = "*"
 
 [dev-packages]
 
