@@ -225,6 +225,7 @@ def  payment_callback_sandbox(request):
                 # Decrease product inventory
                 for  item in order.items.all():
                      item.product.inventory -= item.quantity
+                     item.product.soled_item +=item.quantity
                      item.product.save()
          
                 return Response({'Success': True, 'Message': 'Payment Was Successful'}, status=status.HTTP_204_NO_CONTENT)
