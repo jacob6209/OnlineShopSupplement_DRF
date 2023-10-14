@@ -32,9 +32,19 @@ class CategorySerializer(serializers.ModelSerializer):
     # description=serializers.CharField(max_length=255)
 
 class ProductImageSerializer(serializers.ModelSerializer):
+
+    image_url = serializers.SerializerMethodField('get_image_url')   
     class Meta:
         model = ProductImage
-        fields = ["id", "product", "image"]
+        fields = ["id", "product", "image","image_url"]
+
+    def get_image_url(self, obj):
+        request = self.context.get('request')
+        if request is not None:
+            image_url = request.build_absolute_uri(obj.image.url)
+            print (image_url)
+            return image_url
+        return None
 
 class CommentGetSerializer(serializers.ModelSerializer):
     class Meta: 
@@ -82,6 +92,7 @@ class CommentSerializer(serializers.ModelSerializer):
         return Comment.objects.create(product_id=product_pk,user=user,**validated_data)
 
 class ProductSerializer(serializers.ModelSerializer):
+    category_title = serializers.SerializerMethodField()
     comments = CommentSerializer(many=True, read_only=True)
     average_rating = serializers.SerializerMethodField()
 
@@ -94,16 +105,18 @@ class ProductSerializer(serializers.ModelSerializer):
         write_only=True
     )
 
+   
+
     class Meta: 
         model=Product
-        # never use all too danger
-        # fields="__all__"  #never use all too danger
-        fields=['id','title','description','category','unit_price','slug','inventory','price_after_tax','top_deal','flash_sales','images','uploaded_images','comments', 'average_rating']
+        fields=['id','title','description','category','category_title','unit_price','slug','inventory','soled_item','tags','price_after_tax','top_deal','flash_sales','images','uploaded_images','comments', 'average_rating']
         read_only_fields = ['slug']  
         
     def get_price_after_tax(self,product:Product):
         return round(product.unit_price*Decimal(1.09),2)
 
+    def get_category_title(self, product: Product):
+        return product.category.title
 
     def get_average_rating(self, obj):
         product_id = obj.id

@@ -39,7 +39,7 @@ class ProductImageInline(admin.TabularInline):
 from django.utils.html import mark_safe
 @admin.register(models.Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ['id', 'name','images_links','inventory', 'unit_price', 'inventory_status', 'product_category', 'num_of_comments']
+    list_display = ['id', 'name','images_links','inventory','soled_item', 'unit_price','tags','inventory_status', 'product_category', 'num_of_comments']
     list_per_page = 10
     list_editable = ['unit_price']
     list_select_related = ['category']

@@ -1,11 +1,14 @@
-from django.contrib.auth.models import AbstractUser,Permission, Group
+from django.contrib.auth.models import AbstractUser,Permission, Group,BaseUserManager
 from django.db import models
 
 
+
+from django.contrib.auth.models import AbstractUser
+
 class CustomUser(AbstractUser):
-    # phone_number = models.CharField(max_length=255)
-    email=models.EmailField(unique=True)
+    email = models.EmailField(unique=True)
     USERNAME_FIELD = 'email'  # Use email as the unique identifier for authentication
-    REQUIRED_FIELDS = []
+    REQUIRED_FIELDS = []  # fields required when using createsuperuser command
+
 
   
