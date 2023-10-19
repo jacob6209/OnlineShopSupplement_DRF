@@ -36,7 +36,7 @@ class Product(models.Model):
         (TAG_STATUS_MOST_HIGHEST_QUALITY,'Highest Quality'),
     ]
 
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=30)
     category = models.ForeignKey(Category, on_delete=models.PROTECT, related_name='products')
     slug = models.SlugField()
     description = models.TextField(blank=True)
@@ -55,7 +55,7 @@ class Product(models.Model):
     tags=models.CharField(max_length=50, choices=TAG_STATUS, default="",blank=True,null=True)
 
     def __str__(self):
-      return f'{self.name}'
+      return f'{self.id}---{self.name}'
 
 class ProductImage(models.Model):
     product=models.ForeignKey(Product,on_delete=models.CASCADE,related_name="images")
@@ -146,11 +146,16 @@ class Comment(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='commment') 
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='comments')
     name = models.CharField(max_length=255)
-    body = models.TextField(max_length=255)
+    body = models.TextField(max_length=1000)
     rating = models.IntegerField(choices=RATING_CHOICES,default=4)  # Rating field limited to 1 to 5
     datetime_created = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=2, choices=COMMENT_STATUS, default=COMMENT_STATUS_WAITING)
 
+
+
+
+
+  
     def __str__(self):
         return f'{ self.body}'
 

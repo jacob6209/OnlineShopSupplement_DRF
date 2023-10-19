@@ -15,7 +15,7 @@ from rest_framework.decorators import action
 from .permissions import IsAdminOrReadOnly, IsOwnerOrReadOnly
 from .pagination import DefultPagination
 from .models import Address, Cart, CartItem, Category, Customer, Product,Comment
-from .serializers import AddItemSerializer, CartItemSerializer, CartSerializer, CategorySerializer, CommentGetSerializer, CommentSerializer, CustomerSerializer, ProductSerializer, UpdateCartItemSerializer
+from .serializers import AddItemSerializer, CartItemSerializer, CartSerializer, CategorySerializer, CommentSerializer, CustomerSerializer, ProductSerializer, UpdateCartItemSerializer
 from store import serializers
 from django.db.models import Count
 from rest_framework.generics import ListCreateAPIView,RetrieveUpdateDestroyAPIView
@@ -327,26 +327,26 @@ class CommentViewSet(ModelViewSet):
     def get_serializer_class(self):
         if self.request.user.is_authenticated:
             if self.request.method=="POST":
-                if self.request.user.first_name:
-                    return CommentGetSerializer
-            return CommentSerializer
+                # if self.request.user.first_name:
+                #     return CommentGetSerializer
+             return CommentSerializer
         else:
             raise PermissionDenied("You must be logged in to post a comment.")
     
 
     def get_queryset(self):
         product_pk=self.kwargs['product_pk']
-        return Comment.objects.filter(product_id=product_pk).all()
+        return Comment.objects.filter(product_id=product_pk).order_by('datetime_created').all()
 
     def get_serializer_context(self):
         return  {"product_pk":self.kwargs['product_pk'],"request": self.request}
 
 
-    def create(self, request, *args, **kwargs):
-        try:
-            return super().create(request, *args, **kwargs)
-        except PermissionDenied as e:
-            return Response({"error": str(e)}, status=403)
+    # def create(self, request, *args, **kwargs):
+    #     try:
+    #         return super().create(request, *args, **kwargs)
+    #     except PermissionDenied as e:
+    #         return Response({"error": str(e)}, status=403)
 
     
 

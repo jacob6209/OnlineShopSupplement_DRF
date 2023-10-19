@@ -46,49 +46,42 @@ class ProductImageSerializer(serializers.ModelSerializer):
             return image_url
         return None
 
-class CommentGetSerializer(serializers.ModelSerializer):
-    class Meta: 
-        model=Comment
-        fields=["id",'body','rating']
+# class CommentGetSerializer(serializers.ModelSerializer):
+#     class Meta: 
+#         model=Comment
+#         fields=["id",'body','rating']
+#         ordering = ['datetime_created']
 
-    def create(self, validated_data):
+#     def create(self, validated_data):
 
-        if not self.context['request'].user.is_authenticated:
-            raise PermissionDenied("You must be logged in to post a comment.")
-        product_pk=self.context['product_pk']
-        user = self.context['request'].user
+#         if not self.context['request'].user.is_authenticated:
+#             raise PermissionDenied("You must be logged in to post a comment.")
+#         product_pk=self.context['product_pk']
+#         user = self.context['request'].user
 
-         # Get the user's first_name and set it as comment's name
-        validated_data['name'] = user.first_name
+#          # Get the user's first_name and set it as comment's name
+#         validated_data['name'] = user.first_name
         
-        # Create a new comment with the obtained name
-        comment = Comment.objects.create(product_id=product_pk, user=user, **validated_data)
-        return comment
+#         # Create a new comment with the obtained name
+#         comment = Comment.objects.create(product_id=product_pk, user=user, **validated_data)
+#         return comment
 
 
 class CommentSerializer(serializers.ModelSerializer):
     class Meta: 
         model=Comment
         fields=["id",'name','body','rating']
+        ordering = ['datetime_created']  
 
     def create(self, validated_data):
         if not self.context['request'].user.is_authenticated:
             raise PermissionDenied("You must be logged in to post a comment.")
         product_pk=self.context['product_pk']
         user = self.context['request'].user
-        
         name = validated_data.get('name')  # Get the name from the validated data
-
-        # Create a new comment with the obtained name
-        comment = Comment.objects.create(product_id=product_pk, user=user, **validated_data)
-
-        # Set the obtained name as the user's first_name
         user.first_name = name
         user.save()
         
-        # Set the name field to user's first_name
-        # validated_data['name'] = user.first_name
-
         return Comment.objects.create(product_id=product_pk,user=user,**validated_data)
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -121,7 +114,10 @@ class ProductSerializer(serializers.ModelSerializer):
     def get_average_rating(self, obj):
         product_id = obj.id
         average_rating = Comment.objects.filter(product_id=product_id).aggregate(Avg('rating'))['rating__avg']
-        return average_rating
+        if average_rating is not None:
+            return round(average_rating, 2)
+        else:
+             return 4.0
 
     # def create(self, validated_data):
     #     product=Product(**validated_data)

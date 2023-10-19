@@ -122,6 +122,8 @@ class CommentAdmin(admin.ModelAdmin):
 
 
 
+
+
 admin.site.register(models.Category)
 
 

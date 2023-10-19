@@ -24,7 +24,7 @@ env.read_env()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-BASE_URL = 'http://192.168.1.14:8000'
+BASE_URL = 'http://192.168.1.253:8000'
 
 
 # Quick-start development settings - unsuitable for production
@@ -37,7 +37,7 @@ SECRET_KEY = env("DJANGO_SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env.bool("DJANGO_DEBUG")
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '192.168.1.14','192.168.204.57']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '192.168.1.14','192.168.204.57','192.168.0.100','192.168.1.253']
 
 
 # Application definition
@@ -107,6 +107,9 @@ DATABASES = {
         'HOST': 'localhost',
         'USER': 'root',
         'PASSWORD': 'mysql',
+         'OPTIONS': {
+            'charset': 'utf8mb4',
+        },
     }
 }
 
@@ -172,8 +175,9 @@ REST_FRAMEWORK={
 SIMPLE_JWT={
     # 'AUTH_HEADER_TYPES':(),
     'AUTH_HEADER_TYPES':('JWT'),
-    'ACCESS_TOKEN_LIFETIME':timedelta(days=1),
-    # 'REFRESH_TOKEN_LIFETIME':timedelta(days=2)
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=30),  # Access token expires in 30 days
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=30),  # Refresh token also expires in 30 days
+
 }
 
 AUTH_USER_MODEL='core.CustomUser'
