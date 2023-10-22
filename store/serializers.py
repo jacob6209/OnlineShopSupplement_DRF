@@ -157,38 +157,45 @@ class CartProductSerializer(serializers.ModelSerializer):
 
 class AddItemSerializer(serializers.ModelSerializer):
     class Meta:
-        model=CartItem
-        fields=['id','product','quantity']
+        model = CartItem
+        fields = ['id', 'product', 'quantity']
 
     def validate_quantity(self, value):
-        product_id = self.initial_data['product']
-        requested_quantity = value
+        if value is None:
+            return 1
+        return value
 
+    def create(self, validated_data):
+        cart_pk = self.context['cart_pk']
+        product = validated_data.get('product')
+        quantity = validated_data.get('quantity')
+
+        # Ensure quantity is a valid integer, default to 1 if None
+        quantity = self.validate_quantity(quantity)
+
+        # Check inventory before adding to cart
         try:
-            product = Product.objects.get(id=product_id)
+            product_obj = Product.objects.get(id=product.id)
         except Product.DoesNotExist:
             raise serializers.ValidationError('Product not found.')
 
-        if product.inventory < requested_quantity:
+        if product_obj.inventory < quantity:
             raise serializers.ValidationError('Not enough stock available for this product.')
-        return value
-    
-    def create(self, validated_data):
-        cart_pk=self.context['cart_pk']
-        product=validated_data.get('product')
-        quantity=validated_data.get('quantity')
 
-        # Check inventory before adding to cart
-        self.validate_quantity(quantity)
-
-        # if CartItem.objects.filter(cart_id=cart_pk,product_id=product.id).exists():
-        try:
-            cart_item=CartItem.objects.get(cart_id=cart_pk,product_id=product.id)
-            cart_item.quantity +=quantity
+        # If CartItem exists, update quantity, else create a new CartItem
+        cart_item, created = CartItem.objects.get_or_create(cart_id=cart_pk, product_id=product.id)
+        if not created:
+            new_quantity = cart_item.quantity + quantity
+            if product_obj.inventory >= new_quantity:
+                cart_item.quantity = new_quantity
+                cart_item.save()
+            else:
+                raise serializers.ValidationError('Not enough stock available for this product.')
+        else:
+            cart_item.quantity = quantity
             cart_item.save()
-        except CartItem.DoesNotExist: 
-            cart_item=CartItem.objects.create(cart_id=cart_pk,**validated_data)
-        self.instance=cart_item
+
+        self.instance = cart_item
         return cart_item
 
 class UpdateCartItemSerializer(serializers.ModelSerializer):
