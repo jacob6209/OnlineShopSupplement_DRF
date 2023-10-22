@@ -70,7 +70,7 @@ class ProductImageSerializer(serializers.ModelSerializer):
 class CommentSerializer(serializers.ModelSerializer):
     class Meta: 
         model=Comment
-        fields=["id",'name','body','rating']
+        fields=["id",'name','body','rating','datetime_created']
         ordering = ['datetime_created']  
 
     def create(self, validated_data):
