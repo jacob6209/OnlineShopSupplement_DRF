@@ -177,10 +177,10 @@ class AddItemSerializer(serializers.ModelSerializer):
         try:
             product_obj = Product.objects.get(id=product.id)
         except Product.DoesNotExist:
-            raise serializers.ValidationError('Product not found.')
+            raise serializers.ValidationError({'error':'Product not found.'})
 
         if product_obj.inventory < quantity:
-            raise serializers.ValidationError('Not enough stock available for this product.')
+            raise serializers.ValidationError({'error': 'Not enough stock available for this product.'})
 
         # If CartItem exists, update quantity, else create a new CartItem
         cart_item, created = CartItem.objects.get_or_create(cart_id=cart_pk, product_id=product.id)
@@ -190,7 +190,7 @@ class AddItemSerializer(serializers.ModelSerializer):
                 cart_item.quantity = new_quantity
                 cart_item.save()
             else:
-                raise serializers.ValidationError('Not enough stock available for this product.')
+                raise serializers.ValidationError({'error': 'Not enough stock available for this product.'})
         else:
             cart_item.quantity = quantity
             cart_item.save()
@@ -202,6 +202,29 @@ class UpdateCartItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = CartItem
         fields = ['quantity']
+
+class DecreaseCartItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CartItem
+        fields = ['quantity']
+
+    def validate_quantity(self, value):
+        if value is None:
+            return 1
+        return value
+
+    def update(self, instance, validated_data):
+        # Get the quantity from validated_data or use the existing quantity if not provided
+        quantity = validated_data.get('quantity', instance.quantity)
+        # Ensure the quantity is never less than or equal to 0
+        instance.quantity = max(quantity, 0)
+        
+        instance.quantity -= 1
+        if instance.quantity <= 0:
+            instance.delete()
+        else:
+            instance.save()
+        return instance
         
 class CartItemSerializer(serializers.ModelSerializer):
     product=CartProductSerializer()

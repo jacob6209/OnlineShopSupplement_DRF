@@ -15,7 +15,7 @@ from rest_framework.decorators import action
 from .permissions import IsAdminOrReadOnly, IsOwnerOrReadOnly
 from .pagination import DefultPagination
 from .models import Address, Cart, CartItem, Category, Customer, Product,Comment
-from .serializers import AddItemSerializer, CartItemSerializer, CartSerializer, CategorySerializer, CommentSerializer, CustomerSerializer, ProductSerializer, UpdateCartItemSerializer
+from .serializers import AddItemSerializer, CartItemSerializer, CartSerializer, CategorySerializer, CommentSerializer, CustomerSerializer, DecreaseCartItemSerializer, ProductSerializer, UpdateCartItemSerializer
 from store import serializers
 from django.db.models import Count
 from rest_framework.generics import ListCreateAPIView,RetrieveUpdateDestroyAPIView
@@ -38,7 +38,7 @@ from .serializers import adsSerializer
 
 
 class CartItemViewSet(ModelViewSet):
-    http_method_names = ['get', 'post', 'patch', 'delete']
+    http_method_names = ['get', 'post', 'patch', 'delete','put']
     # serializer_class=CartItemSerializer
     
     def get_queryset(self):
@@ -50,6 +50,8 @@ class CartItemViewSet(ModelViewSet):
             return AddItemSerializer
         elif self.request.method == 'PATCH':
             return UpdateCartItemSerializer
+        elif self.request.method == 'PUT':
+            return DecreaseCartItemSerializer
         return CartItemSerializer
 
     def get_serializer_context(self):
