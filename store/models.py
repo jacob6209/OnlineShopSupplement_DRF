@@ -87,6 +87,7 @@ class Address(models.Model):
     street = models.CharField(max_length=255)
     zip_code = models.CharField(max_length=10)
     phone_number = models.CharField(max_length=255)
+    address = models.CharField(max_length=255,default="")
 
 
     def clean(self):

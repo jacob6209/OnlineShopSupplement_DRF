@@ -3,6 +3,7 @@ from dataclasses import field, fields
 from decimal import Decimal, Rounded
 from math import fabs
 from multiprocessing import context
+from operator import truediv
 from pickletools import decimalnl_long
 from pyexpat import model
 from statistics import mode
@@ -15,6 +16,7 @@ from store.models import Customer,Product,Cart,CartItem,Address
 from orders.models import OrderItem,Order
 from django.contrib.auth import get_user_model  
 from django.db import transaction
+
 
 class OrderCustomerSerializer(serializers.ModelSerializer):
     first_name=serializers.CharField(max_length=254,source='user.first_name')
@@ -61,7 +63,7 @@ class OrderUpdateSerializer(serializers.ModelSerializer):
 class AddressSerializer(serializers.ModelSerializer):
     class Meta:
         model = Address
-        fields = ('first_name','last_name','phone_number','province', 'city', 'street', 'zip_code')
+        fields = ('first_name','last_name','phone_number','province', 'city', 'street','address', 'zip_code')
 
     def save(self, customer=None, **kwargs):
         address_data = self.validated_data
@@ -79,6 +81,7 @@ class AddressSerializer(serializers.ModelSerializer):
             address_instance.province = address_data.get('province', address_instance.province)
             address_instance.city = address_data.get('city', address_instance.city)
             address_instance.street = address_data.get('street', address_instance.street)
+            address_instance.address = address_data.get('address', address_instance.address)
             address_instance.zip_code = address_data.get('zip_code', address_instance.zip_code)
             address_instance.save()
 
@@ -185,6 +188,8 @@ class OrderCreateSerializer(serializers.Serializer):
 
                 ) for cart_item in cart_items
             ]
+            for order_item in order_items:
+                print(order_item.product)
                 # Secent Solotion
             # order_items=list()
             # for cart_item in cart_items:
@@ -194,7 +199,9 @@ class OrderCreateSerializer(serializers.Serializer):
             #     order_item.unit_price=cart_item.product.unit_price
             #     order_item.quantity=cart_item.quantity
             # order_items.append(order_item)
-
             OrderItem.objects.bulk_create(order_items)
+            order_id = order.id
             Cart.objects.get(id=cart_id).delete()
+            print(order_id)
+            # return redirect('payment:payment_process', order_id=order_id)
             return order

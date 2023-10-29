@@ -162,7 +162,7 @@ def  payment_process_sandbox(request,order_id):
             'accept':'application/json',
             'content-type':'application/json'
         }
-        rial_total_price_float = float(rial_total_price)
+        rial_total_price_float = float(toman_total_price)
         request_data = {
             'MerchantID':'abcABCabcABCabcABCabcABCabcABCabcABC',
             'Amount':rial_total_price_float,
@@ -177,7 +177,7 @@ def  payment_process_sandbox(request,order_id):
         order.zarinpal_authority=authority
         order.save()
         if 'errors' not in data or len(data['errors']) == 0:
-            return redirect(f'https://sandbox.zarinpal.com/pg/StartPay/{authority}')
+            return Response({'Success': True,'order_id': order_id,'Linke':f'https://sandbox.zarinpal.com/pg/StartPay/{authority}'})
         else:
             return Response({'Success': False, 'Message': 'Error From ZarinPal'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     else:

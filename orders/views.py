@@ -6,6 +6,7 @@ from rest_framework.permissions import IsAdminUser,IsAuthenticated
 from django.db.models import Prefetch
 from rest_framework.viewsets import ModelViewSet,GenericViewSet
 from .serializers import OrderCreateSerializer,OrderForAdminSerializer,OrderSerializer,OrderUpdateSerializer
+from django.shortcuts import redirect
 
 class OrderViewSet(ModelViewSet):
     # permission_classes=[IsAuthenticated]
@@ -35,7 +36,9 @@ class OrderViewSet(ModelViewSet):
        create_order_serializer.is_valid(raise_exception=True)
        create_order=create_order_serializer.save()
        serializers=OrderSerializer(create_order)
-       return Response(serializers.data)
+       
+       return redirect('payment:payment_process', order_id=create_order.id)
+    #    return Response(serializers.data)
 
 
 
