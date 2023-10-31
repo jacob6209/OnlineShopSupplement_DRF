@@ -162,7 +162,7 @@ def  payment_process_sandbox(request,order_id):
             'accept':'application/json',
             'content-type':'application/json'
         }
-        rial_total_price_float = float(toman_total_price)
+        rial_total_price_float = float(rial_total_price)
         request_data = {
             'MerchantID':'abcABCabcABCabcABCabcABCabcABCabcABC',
             'Amount':rial_total_price_float,
