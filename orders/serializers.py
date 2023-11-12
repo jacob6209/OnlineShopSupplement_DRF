@@ -201,7 +201,7 @@ class OrderCreateSerializer(serializers.Serializer):
             # order_items.append(order_item)
             OrderItem.objects.bulk_create(order_items)
             order_id = order.id
-            Cart.objects.get(id=cart_id).delete()
+            # Cart.objects.get(id=cart_id).delete()
             print(order_id)
             # return redirect('payment:payment_process', order_id=order_id)
             return order

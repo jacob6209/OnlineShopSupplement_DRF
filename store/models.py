@@ -51,7 +51,6 @@ class Product(models.Model):
 
     top_deal = models.BooleanField(default=False)
     flash_sales = models.BooleanField(default=False)
-    # tags=models.CharField(max_length=50,default="",blank=True,null=True)
     tags=models.CharField(max_length=50, choices=TAG_STATUS, default="",blank=True,null=True)
 
     def __str__(self):
@@ -59,9 +58,8 @@ class Product(models.Model):
 
 class ProductImage(models.Model):
     product=models.ForeignKey(Product,on_delete=models.CASCADE,related_name="images")
-    image=models.ImageField(upload_to='product_img/',default="",null=True,blank="")
+    image=models.ImageField(upload_to='product_img/',null=True,blank=True) 
     # image=ResizedImageField(upload_to='product_img/',default="",null=True,blank="")
-    
 
 
 class Customer(models.Model):

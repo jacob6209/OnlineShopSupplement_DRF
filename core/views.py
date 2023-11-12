@@ -1,3 +1,4 @@
+import http
 from http.client import HTTPResponse
 from djoser.views import UserViewSet
 from django.shortcuts import redirect
@@ -7,6 +8,9 @@ from rest_framework.decorators import action
 from djoser import signals
 from djoser.conf import settings
 from djoser.compat import get_user_email
+from django.http import JsonResponse
+
+
 
 class ActivateUser(UserViewSet):
     def get_serializer(self, *args, **kwargs):
@@ -44,3 +48,13 @@ class ActivateUser(UserViewSet):
         else:
             # Redirect to error.html on failure
            return JsonResponse({'success': False,'massage':'Somthing Went Wrong,please Try Again'})
+
+
+    # def generate_deep_link(request):
+    #     deep_link = DeepLink.objects.create(
+    #         url='yourapp://deeplink',
+    #         content_type='yourapp.deeplink',
+    #     )
+    #     return JsonResponse({'deep_link': deep_link.url})
+
+        

@@ -1,3 +1,4 @@
+from typing_extensions import Self
 from rest_framework.response import Response
 from django.urls import reverse
 import requests,json
@@ -8,7 +9,13 @@ from rest_framework import status
 from rest_framework.decorators import api_view, renderer_classes
 from rest_framework.renderers import JSONRenderer
 
+from django.http import HttpResponsePermanentRedirect
+import os
+from store.signals import order_created
 
+# for  For Deep Link
+class CustomRedirect(HttpResponsePermanentRedirect):
+    allowed_schemes= [os.environ.get('App_SCHEME'),'http','https']
 # Create your views here.
 
 def  payment_process(request,order_id):
@@ -148,24 +155,21 @@ def payment_callback(request):
 @api_view(['GET'])
 def  payment_process_sandbox(request,order_id):
     order=get_object_or_404(Order,id=order_id)
-    print(order.status)
-    print(order.ORDER_STATUS_PAID)
+
     if  order.status!=order.ORDER_STATUS_PAID:
 
-        print(order.status)
-
         toman_total_price = order.get_total_price()
-        rial_total_price = toman_total_price*10
+        # rial_total_price = toman_total_price*10
 
         ZarinPal_Request_Url='https://sandbox.zarinpal.com/pg/rest/WebGate/PaymentRequest.json'
         request_header={
             'accept':'application/json',
             'content-type':'application/json'
         }
-        rial_total_price_float = float(rial_total_price)
+        toman_total_price_float = float(toman_total_price)
         request_data = {
             'MerchantID':'abcABCabcABCabcABCabcABCabcABCabcABC',
-            'Amount':rial_total_price_float,
+            'Amount':toman_total_price_float,
             'Description':f'#{order.id}:{order.customer.user.first_name} {order.customer.user.last_name}',
             'CallbackURL':request.build_absolute_uri(reverse('payment:payment_callback')),
 
@@ -183,6 +187,7 @@ def  payment_process_sandbox(request,order_id):
     else:
         return Response({'Success': False, 'Message': 'The payment operation of this order has already been successfully completed'}, status=status.HTTP_400_BAD_REQUEST)
 
+
 @api_view(['GET'])
 # @renderer_classes([JSONRenderer])
 def  payment_callback_sandbox(request):
@@ -191,9 +196,9 @@ def  payment_callback_sandbox(request):
     print(f'payment_authority:{payment_authority},payment_status:{payment_status}')
     order=get_object_or_404(Order,zarinpal_authority=payment_authority)
     toman_total_price = order.get_total_price()
-    rial_total_price = toman_total_price*10
+    # rial_total_price = toman_total_price*10
 
-    rial_total_price_float = float(rial_total_price)
+    toman_total_price_float = float(toman_total_price)
     if payment_status=='OK':
         request_header={
             'accept':'application/json',
@@ -201,11 +206,9 @@ def  payment_callback_sandbox(request):
         }
         request_data = {
             'MerchantID':'abcABCabcABCabcABCabcABCabcABCabcABC',
-            'Amount':rial_total_price_float,
+            'Amount':toman_total_price_float,
             'Authority':payment_authority
         }
-
-        # print(f'payment_status 2:{payment_status}')
         res=requests.post(
             url='https://sandbox.zarinpal.com/pg/rest/WebGate/PaymentVerification.json',
             data=json.dumps(request_data),
@@ -227,16 +230,22 @@ def  payment_callback_sandbox(request):
                      item.product.inventory -= item.quantity
                      item.product.soled_item +=item.quantity
                      item.product.save()
-         
-                return Response({'Success': True, 'Message': 'Payment Was Successful'}, status=status.HTTP_204_NO_CONTENT)
+
+                order_created.send_robust(sender=order.__class__, instance=order)
+
+                return CustomRedirect('jacsupplement://success?Success=True&Message=Payment%20Was%20Successful&payment_code={}'.format(payment_code))
             elif payment_code==101:
-                return Response({'Success':True,'Message':'Payment Was Successful,However This transaction has already been registered'},status=status.HTTP_204_NO_CONTENT)
+                return CustomRedirect('jacsupplement://success?Success=True&Message=Payment%20Was%20Successful%20However%20This%20transaction%20has%20already%20been%20registered,&payment_code={}'.format(payment_code))
+                # return Response({'Success':True,'Message':'Payment Was Successful,However This transaction has already been registered'},status=status.HTTP_204_NO_CONTENT)
             else:
-                error_code=res.json()['errors']['code']
-                error_message=res.json()['errors']['message']
-                return Response({'Success':False,'Message':f'transaction was faild, {error_code} {error_message}'},status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                # error_code=res.json()['errors']['code']
+                # error_message=res.json()['errors']['message']
+                return CustomRedirect('jacsupplement://success?Success=False&Message=transaction%20faild&')
+
+                # return Response({'Success':False,'Message':f'transaction was faild, {error_code} {error_message}'},status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     else:
-         return Response({'Success':False,'Message':'transaction was faild'},status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-         
+        return CustomRedirect('jacsupplement://success?Success=False&Message=transaction%20faild&')
+        #  return Response({'Success':False,'Message':'transaction was faild'},status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 

@@ -31,20 +31,21 @@ class CategorySerializer(serializers.ModelSerializer):
     # title=serializers.CharField(max_length=255)
     # description=serializers.CharField(max_length=255)
 
-class ProductImageSerializer(serializers.ModelSerializer):
 
-    image_url = serializers.SerializerMethodField('get_image_url')   
+
+class ProductImageSerializer(serializers.ModelSerializer):
+    # image_url = serializers.SerializerMethodField('get_image_url')   
     class Meta:
         model = ProductImage
-        fields = ["id", "product", "image","image_url"]
+        fields = ["id", "product", "image"]
 
-    def get_image_url(self, obj):
-        request = self.context.get('request')
-        if request is not None:
-            image_url = request.build_absolute_uri(obj.image.url)
-            print (image_url)
-            return image_url
-        return None
+    # def get_image_url(self, obj):
+    #     request = self.context.get('request')
+    #     if request is not None:
+    #         image_url = request.build_absolute_uri(obj.image.url)
+    #         print (image_url)
+    #         return image_url
+    #     return None
 
 # class CommentGetSerializer(serializers.ModelSerializer):
 #     class Meta: 
@@ -272,13 +273,13 @@ class CustomerSerializer(serializers.ModelSerializer):
         read_only_fields=['user']
 #------------------------------------------------------
 
-class ProductImageSerializer(serializers.ModelSerializer):
+class AdsProductImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductImage
         fields = ('id', 'image')
 
 class AdsProductSerializer(serializers.ModelSerializer):
-    images = ProductImageSerializer(many=True, read_only=True)
+    images = AdsProductImageSerializer(many=True, read_only=True)
     class Meta:
         model = Product
         fields = ['id', 'images',]

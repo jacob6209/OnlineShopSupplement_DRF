@@ -17,6 +17,7 @@ djangorestframework-simplejwt = "*"
 pillow = "*"
 environs = {extras = ["django"], version = "*"}
 django-resized = "*"
+django-deep-link = "*"
 
 [dev-packages]
 
