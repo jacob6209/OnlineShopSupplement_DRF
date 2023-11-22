@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "e827070bc58fb827263970b6514d11ab6cfa9ce4dd4f8c79f1d21b68116f3caa"
+            "sha256": "fcb1459b5c018c33296c799f11029f6799c2ea8d4cd0cad174213f2bf0456b90"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -322,12 +322,12 @@
         },
         "djoser": {
             "hashes": [
-                "sha256:4aa48502df870c8b5f07109ad4a749cc881c37bb5efa85cf5462ea695a0dca8c",
-                "sha256:7b24718cdc51b4294b0abcf6bf0ead11aa3ca83652e351dfb04b7b8b15afa3b0"
+                "sha256:9deb831a1c8781ceff325699e1407b4e1be8b4588e87071621d88ba31c09349f",
+                "sha256:efb91ad61e4d5b8d664db029b5947df9d34078289ef2680a1ab665e047144b74"
             ],
             "index": "pypi",
             "markers": "python_version >= '3.8' and python_version < '4.0'",
-            "version": "==2.2.0"
+            "version": "==2.2.2"
         },
         "drf-nested-routers": {
             "hashes": [
@@ -360,12 +360,12 @@
         },
         "faker": {
             "hashes": [
-                "sha256:14ccb0aec342d33aa3889a864a56e5b3c2d56bce1b89f9189f4fbc128b9afc1e",
-                "sha256:da880a76322db7a879c848a0771e129338e0a680a9f695fd9a3e7a6ac82b45e1"
+                "sha256:171b27ba106cf69e30a91ac471407c2362bd6af27738e2461dc441aeff5eed91",
+                "sha256:df44b68b9d231e784f4bfe616d781576cfef9f0c5d9a17671bf84dc10d7b44d6"
             ],
             "index": "pypi",
             "markers": "python_version >= '3.8'",
-            "version": "==19.13.0"
+            "version": "==20.0.0"
         },
         "idna": {
             "hashes": [
@@ -481,6 +481,14 @@
             ],
             "version": "==2.21"
         },
+        "pyfcm": {
+            "hashes": [
+                "sha256:82340ae9d76b5d2bccc3392a6688872016b648d3375c41641e888bc337674d76",
+                "sha256:aa4a391dfcabb0fffebc28ead0d79f0db113d15c03ea06334b1387804112d69c"
+            ],
+            "index": "pypi",
+            "version": "==1.5.4"
+        },
         "pyjwt": {
             "hashes": [
                 "sha256:57e28d156e3d5c10088e0c68abb90bfac3df82b40a71bd0daa20c65ccd5c23de",
@@ -592,11 +600,11 @@
         },
         "urllib3": {
             "hashes": [
-                "sha256:c97dfde1f7bd43a71c8d2a58e369e9b2bf692d1334ea9f9cae55add7d0dd0f84",
-                "sha256:fdb6d215c776278489906c2f8916e6e7d4f5a9b602ccbcfdf7f016fc8da0596e"
+                "sha256:55901e917a5896a349ff771be919f8bd99aff50b79fe58fec595eb37bbc56bb3",
+                "sha256:df7aa8afb0148fa78488e7899b2c59b5f4ffcfa82e6c54ccb9dd37c1d7b52d54"
             ],
-            "markers": "python_version >= '3.7'",
-            "version": "==2.0.7"
+            "markers": "python_version >= '3.8'",
+            "version": "==2.1.0"
         },
         "user-agents": {
             "hashes": [

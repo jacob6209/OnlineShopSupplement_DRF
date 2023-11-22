@@ -18,6 +18,7 @@ pillow = "*"
 environs = {extras = ["django"], version = "*"}
 django-resized = "*"
 django-deep-link = "*"
+pyfcm = "*"
 
 [dev-packages]
 
