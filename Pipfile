@@ -19,6 +19,7 @@ environs = {extras = ["django"], version = "*"}
 django-resized = "*"
 django-deep-link = "*"
 pyfcm = "*"
+twilio = "*"
 
 [dev-packages]
 

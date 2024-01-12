@@ -24,7 +24,7 @@ env.read_env()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-BASE_URL = 'http://192.168.127.57:8000'
+BASE_URL = 'http://192.168.52.57:8000'
 
 
 # Quick-start development settings - unsuitable for production
@@ -34,10 +34,16 @@ BASE_URL = 'http://192.168.127.57:8000'
 # SECRET_KEY = 'django-insecure-r8xs3@%bid*q6(5$xo%f=0##n+w!vvqqb(r!z_ei9cecntez^m'
 SECRET_KEY = env("DJANGO_SECRET_KEY")
 
+# For Twilio Setting:-------------------------------
+TWILIO_ACCOUNT_SID =env("TWILIO_ACCOUNT_SID")
+TWILIO_AUTH_TOKEN = env("TWILIO_AUTH_TOKEN")
+TWILIO_PHONE_NUMBER = env("TWILIO_PHONE_NUMBER")
+#----------------------------------------------------
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env.bool("DJANGO_DEBUG")
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '192.168.127.57','192.168.204.57','192.168.0.102','192.168.12.57','192.168.188.57']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '192.168.52.57','192.168.204.57','192.168.0.102','192.168.12.57','192.168.188.57']
 
 
 # Application definition
